@@ -4,11 +4,11 @@ If needed, please ask calrification questions.
 
 Please do following:
 
-- [ ] Fork repository 
-- [ ] Change project code to make MultipleUsersTest pass
-- [ ] Change project code to make AllQuestionsValidTest pass
-- [ ] Refactor project code and tests to your liking and best effort . Focus on QuizController and QuizService.
-- [ ] Write tests for QuizService and QuizController
-- [ ] Prepare and submit pull request
+1. Fork repository 
+1. Change project code to make MultipleUsersTest pass
+1. Change project code to make AllQuestionsValidTest pass
+1. Refactor project code and tests to your liking and best effort . Focus on QuizController and QuizService.
+1. Write tests for QuizService and QuizController
+1. Prepare and submit pull request
 
 Try to do every step as a separate commit. 
