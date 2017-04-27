@@ -1,6 +1,6 @@
 GitHub repository URL: https://github.com/throwaway201704/take-home
 
-If needed, please ask calrification questions.
+If needed, please ask clarification questions.
 
 Please do following:
 
