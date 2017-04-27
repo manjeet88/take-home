@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <changeSet id="1" author="anton">
+
+        <createTable tableName="QUIZ_QUESTION">
+            <column name="id" type="bigint(20)" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="question" type="varchar(100)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="version" type="int(10)" defaultValue="0">
+                <constraints nullable="false"/>
+            </column>
+            <column name="update_count" type="bigint(20)">
+            </column>
+        </createTable>
+
+        <createTable tableName="QUIZ_ANSWER">
+            <column name="id" type="bigint(20)" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="question_fk" type="bigint(20)">
+                <constraints references="QUIZ_QUESTION(id)" foreignKeyName="FK_QUIZ_QUESTION_QuestionId"
+                             nullable="true"/>
+            </column>
+            <column name="answer" type="varchar(100)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="version" type="int(10)" defaultValue="0">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <createTable tableName="QUIZ_SECTION">
+            <column name="id" type="bigint(20)" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="version" type="int(10)" defaultValue="0">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <createTable tableName="QUIZ">
+            <column name="id" type="bigint(20)" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="name" type="varchar(100)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="version" type="int(10)" defaultValue="0">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+    </changeSet>
+
+    <changeSet id="2" author="anton">
+        <addColumn tableName="QUIZ_QUESTION">
+            <column name="section_fk" type="bigint(20)">
+                <constraints references="QUIZ_SECTION(id)" foreignKeyName="FK_QUIZ_QUESTION_SectionId"
+                             nullable="true"/>
+            </column>
+        </addColumn>
+        <addColumn tableName="QUIZ_SECTION">
+            <column name="quiz_fk" type="bigint(20)">
+                <constraints references="QUIZ(id)" foreignKeyName="FK_QUIZ_SECTION_QuizId" 
+                             nullable="true"/>
+            </column>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="3" author="anton">
+        <insert tableName="QUIZ">
+            <column name="id" value="1"/>
+            <column name="name" value="My First Quiz"/>
+        </insert>
+
+        <insert tableName="QUIZ_SECTION">
+            <column name="id" value="1"/>
+            <column name="quiz_fk" value="1"/>
+        </insert>
+
+        <insert tableName="QUIZ_SECTION">
+            <column name="id" value="2"/>
+            <column name="quiz_fk" value="1"/>
+        </insert>
+
+        <insert tableName="QUIZ_QUESTION">
+            <column name="id" value="1"/>
+            <column name="section_fk" value="1"/>
+            <column name="question" value="What is your first name?"/>
+            <column name="update_count" value="0"/>
+        </insert>
+
+        <insert tableName="QUIZ_QUESTION">
+            <column name="id" value="2"/>
+            <column name="section_fk" value="1"/>
+            <column name="question" value="What is your last name?"/>
+            <column name="update_count" value="0"/>
+        </insert>
+
+        <insert tableName="QUIZ_QUESTION">
+            <column name="id" value="3"/>
+            <column name="section_fk" value="2"/>
+            <column name="question" value="What is your date of birth?"/>
+            <column name="update_count" value="0"/>
+        </insert>
+
+        <insert tableName="QUIZ_QUESTION">
+            <column name="id" value="4"/>
+            <column name="section_fk" value="2"/>
+            <column name="question" value="Where do you live?"/>
+            <column name="update_count" value="0"/>
+        </insert>
+
+    </changeSet>
+
+</databaseChangeLog>
