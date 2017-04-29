@@ -1,5 +1,6 @@
 package es.nitaur;
 
+import javax.persistence.Column;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.MappedSuperclass;
@@ -14,6 +15,10 @@ public class GenericEntity implements Serializable {
     @Id
     @GeneratedValue
     private Long id;
+
+    @Version
+    @Column(name = "version")
+    private Integer version;
 
     public Long getId() {
         return id;
