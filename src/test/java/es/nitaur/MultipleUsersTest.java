@@ -40,7 +40,7 @@ public class MultipleUsersTest {
         executorService.awaitTermination(60, TimeUnit.SECONDS);
 
         QuizQuestion question = restTemplate.getForObject(GET_QUESTION_API, QuizQuestion.class);
-        assertThat("There were 10 updates to the question", 10L, is(question.getUpdateCount()));
+        assertThat("There were 10 updates to the question", question.getUpdateCount(), is(10L));
     }
 
 }

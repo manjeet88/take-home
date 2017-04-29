@@ -49,7 +49,7 @@ public class AllQuestionsValidTest {
         List<QuizQuestion> body = exchange.getBody();
 
         for (QuizQuestion quizQuestion : body) {
-            assertThat("Question text should not be <<redacted>>", "<<redacted>>", not(quizQuestion.getQuestion()));
+            assertThat("Question text should not be <<redacted>>", quizQuestion.getQuestion(), not("<<redacted>>"));
         }
     }
 
@@ -71,7 +71,7 @@ public class AllQuestionsValidTest {
         List<QuizQuestion> body = exchange.getBody();
 
         for (QuizQuestion quizQuestion : body) {
-            assertThat("Question text is only <<redacted>>", "<<redacted>>", is(quizQuestion.getQuestion()));
+            assertThat("Question text is only <<redacted>>", quizQuestion.getQuestion(), is("<<redacted>>"));
         }
     }
 }
