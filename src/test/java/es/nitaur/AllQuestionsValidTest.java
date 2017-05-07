@@ -1,10 +1,10 @@
 package es.nitaur;
 
 import com.google.common.collect.Lists;
+import es.nitaur.domain.QuizQuestion;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.context.embedded.LocalServerPort;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.core.ParameterizedTypeReference;
@@ -22,11 +22,7 @@ import static org.hamcrest.core.IsNot.not;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class AllQuestionsValidTest {
 
-    public static final String UPDATE_QUESTION_API = "/api/quiz/updateQuestions";
-    public static final String GET_ALL_QUESTIONS_API = "/api/quiz/allQuestions";
-
-    @LocalServerPort
-    int port;
+    public static final String QUESTIONS_API = "/api/quizzes/questions";
 
     @Autowired
     private TestRestTemplate restTemplate;
@@ -43,13 +39,14 @@ public class AllQuestionsValidTest {
 
         List<QuizQuestion> questionsToUpdate = Lists.newArrayList(quizQuestion1, quizQuestion2);
 
-        restTemplate.postForLocation(UPDATE_QUESTION_API, questionsToUpdate);
+        restTemplate.put(QUESTIONS_API, questionsToUpdate);
 
-        ResponseEntity<List<QuizQuestion>> exchange = restTemplate.exchange(GET_ALL_QUESTIONS_API + "?filterSectionId=1", HttpMethod.GET, null, new ParameterizedTypeReference<List<QuizQuestion>>() {});
-        List<QuizQuestion> body = exchange.getBody();
+        ResponseEntity<List<QuizQuestion>> response = restTemplate.exchange(QUESTIONS_API + "?filterSectionId=1", HttpMethod.GET, null, new ParameterizedTypeReference<List<QuizQuestion>>() {
+        });
+        List<QuizQuestion> questions = response.getBody();
 
-        for (QuizQuestion quizQuestion : body) {
-            assertThat("Question text should not be <<redacted>>", quizQuestion.getQuestion(), not("<<redacted>>"));
+        for (QuizQuestion question : questions) {
+            assertThat("Question text should not be <<redacted>>", question.getQuestion(), not("<<redacted>>"));
         }
     }
 
@@ -65,12 +62,13 @@ public class AllQuestionsValidTest {
 
         List<QuizQuestion> questionsToUpdate = Lists.newArrayList(quizQuestion3, quizQuestion4);
 
-        restTemplate.postForLocation(UPDATE_QUESTION_API, questionsToUpdate);
+        restTemplate.put(QUESTIONS_API, questionsToUpdate);
 
-        ResponseEntity<List<QuizQuestion>> exchange = restTemplate.exchange(GET_ALL_QUESTIONS_API + "?filterSectionId=2", HttpMethod.GET, null, new ParameterizedTypeReference<List<QuizQuestion>>() {});
-        List<QuizQuestion> body = exchange.getBody();
+        ResponseEntity<List<QuizQuestion>> response = restTemplate.exchange(QUESTIONS_API + "?filterSectionId=2", HttpMethod.GET, null, new ParameterizedTypeReference<List<QuizQuestion>>() {
+        });
+        List<QuizQuestion> questions = response.getBody();
 
-        for (QuizQuestion quizQuestion : body) {
+        for (QuizQuestion quizQuestion : questions) {
             assertThat("Question text is only <<redacted>>", quizQuestion.getQuestion(), is("<<redacted>>"));
         }
     }

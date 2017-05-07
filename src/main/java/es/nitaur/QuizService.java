@@ -1,5 +1,9 @@
 package es.nitaur;
 
+import es.nitaur.domain.Quiz;
+import es.nitaur.domain.QuizAnswer;
+import es.nitaur.domain.QuizQuestion;
+
 import java.util.Collection;
 import java.util.List;
 
@@ -11,6 +15,7 @@ public interface QuizService {
 
     Quiz create(Quiz quiz);
 
+    //TODO: remove method or add respective endpoint
     Quiz update(Quiz quiz);
 
     void delete(Long id);
