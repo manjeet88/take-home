@@ -78,6 +78,7 @@ public class QuizController {
 
     @RequestMapping(value = "/api/quiz/updateQuestions",
             method = RequestMethod.POST)
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public ResponseEntity<List<QuizQuestion>> updateQuestions(@RequestBody final List<QuizQuestion> quizQuestions) {
         List<QuizQuestion> updateQuestion = getQuizService().updateQuestions(quizQuestions);
         return new ResponseEntity<List<QuizQuestion>>(updateQuestion, HttpStatus.OK);
