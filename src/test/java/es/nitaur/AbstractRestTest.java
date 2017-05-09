@@ -18,11 +18,11 @@ public abstract class AbstractRestTest {
     @Autowired
     private TestRestTemplate restTemplate;
 
-    protected <T> ResponseEntity<List<T>> httpGetList(String url, ParameterizedTypeReference responseType) {
+    protected ResponseEntity httpGetList(String url, ParameterizedTypeReference responseType) {
         return restTemplate.exchange(url, HttpMethod.GET, null, responseType);
     }
 
-    protected <T> ResponseEntity<T> httpGetOne(String url, Class responseType) {
+    protected ResponseEntity httpGetOne(String url, Class responseType) {
         return restTemplate.getForEntity(url, responseType);
     }
 
@@ -30,7 +30,7 @@ public abstract class AbstractRestTest {
         return restTemplate.postForEntity(url, requestObject, responseType);
     }
 
-    protected <T> ResponseEntity<T> httpDelete(String url, Class responseType) {
+    protected ResponseEntity httpDelete(String url, Class responseType) {
         return restTemplate.exchange(url, HttpMethod.DELETE, null, responseType);
     }
 

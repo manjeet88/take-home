@@ -23,7 +23,7 @@ import java.util.Collection;
 import java.util.List;
 
 @RestController
-@RequestMapping(value = "/api/quizzes",
+@RequestMapping(value = "/api",
         produces = MediaType.APPLICATION_JSON_VALUE)
 public class QuizController {
 
@@ -32,13 +32,13 @@ public class QuizController {
     @Autowired
     private QuizService quizService;
 
-    @GetMapping(value = "")
+    @GetMapping(value = "/quizzes")
     public ResponseEntity<Collection<Quiz>> getQuizzes() {
         final Collection<Quiz> quizzes = quizService.findAll();
         return new ResponseEntity<Collection<Quiz>>(quizzes, HttpStatus.OK);
     }
 
-    @GetMapping(value = "/{id}")
+    @GetMapping(value = "/quizzes/{id}")
     public ResponseEntity<Quiz> getQuiz(@PathVariable final Long id) {
         final Quiz quiz = quizService.findOne(id);
         if (quiz == null) {
@@ -48,14 +48,14 @@ public class QuizController {
         return new ResponseEntity<Quiz>(quiz, HttpStatus.OK);
     }
 
-    @PostMapping(value = "",
+    @PostMapping(value = "/quizzes",
             consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Quiz> createQuiz(@RequestBody final Quiz quiz) {
         final Quiz savedQuiz = quizService.create(quiz);
         return new ResponseEntity<Quiz>(savedQuiz, HttpStatus.CREATED);
     }
 
-    @DeleteMapping(value = "/{id}")
+    @DeleteMapping(value = "/quizzes/{id}")
     public ResponseEntity<Quiz> deleteQuiz(@PathVariable("id") final Long id) {
         quizService.delete(id);
         return new ResponseEntity<Quiz>(HttpStatus.NO_CONTENT);

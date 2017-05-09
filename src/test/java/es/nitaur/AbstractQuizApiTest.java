@@ -15,7 +15,7 @@ import static com.google.common.collect.Lists.newArrayList;
 
 public abstract class AbstractQuizApiTest extends AbstractRestTest {
     public static final String QUIZZES_API = "/api/quizzes";
-    public static final String QUESTIONS_API = QUIZZES_API + "/questions";
+    public static final String QUESTIONS_API = "/api/questions";
 
     public static final ParameterizedTypeReference<List<Quiz>> QUIZZES_TYPE = new ParameterizedTypeReference<List<Quiz>>() {
     };
