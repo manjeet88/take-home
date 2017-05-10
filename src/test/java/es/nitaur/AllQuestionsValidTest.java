@@ -1,13 +1,11 @@
 package es.nitaur;
 
 import com.google.common.collect.Lists;
-import es.nitaur.domain.Quiz;
 import es.nitaur.domain.QuizQuestion;
 import es.nitaur.domain.QuizSection;
 import org.junit.Test;
 import org.springframework.http.ResponseEntity;
 
-import java.util.Iterator;
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -19,18 +17,19 @@ public class AllQuestionsValidTest extends AbstractQuizApiTest {
 
     @Test
     public void questionsAreNotSavedWithEmptyQuestionText() throws Exception {
-        Quiz savedQuiz = saveQuize1();
-        QuizSection savedSection = savedQuiz.getSections().iterator().next();
-        Iterator<QuizQuestion> iterator = savedSection.getQuizQuestions().iterator();
-        QuizQuestion savedQuestion1 = iterator.next();
-        QuizQuestion savedQuestion2 = iterator.next();
+        QuizSection savedSection = saveQuizWithSection("Value 1?", "Value 2?");
+        List<QuizQuestion> savedQuestions = savedSection.getQuizQuestions();
+        QuizQuestion savedQuestion1 = savedQuestions.get(0);
+        QuizQuestion savedQuestion2 = savedQuestions.get(1);
 
-        QuizQuestion quizQuestion1 = new QuizQuestion();
-        quizQuestion1.setId(savedQuestion1.getId());
-        quizQuestion1.setQuestion("<<redacted>>");
-        QuizQuestion quizQuestion2 = new QuizQuestion();
-        quizQuestion2.setId(savedQuestion2.getId());
-        quizQuestion2.setQuestion(null);
+        QuizQuestion quizQuestion1 = QuizQuestion.newBuilder()
+                .id(savedQuestion1.getId())
+                .question("<<redacted>>")
+                .build();
+        QuizQuestion quizQuestion2 = QuizQuestion.newBuilder()
+                .id(savedQuestion2.getId())
+                .question(null)
+                .build();
 
         List<QuizQuestion> questionsToUpdate = Lists.newArrayList(quizQuestion1, quizQuestion2);
 
@@ -47,18 +46,19 @@ public class AllQuestionsValidTest extends AbstractQuizApiTest {
 
     @Test
     public void questionsAreSavedWithQuestionText() throws Exception {
-        Quiz savedQuiz = saveQuize1();
-        QuizSection savedSection = savedQuiz.getSections().iterator().next();
-        Iterator<QuizQuestion> iterator = savedSection.getQuizQuestions().iterator();
-        QuizQuestion savedQuestion1 = iterator.next();
-        QuizQuestion savedQuestion2 = iterator.next();
+        QuizSection savedSection = saveQuizWithSection("Value 3?", "Value 4?");
+        List<QuizQuestion> savedQuestions = savedSection.getQuizQuestions();
+        QuizQuestion savedQuestion1 = savedQuestions.get(0);
+        QuizQuestion savedQuestion2 = savedQuestions.get(1);
 
-        QuizQuestion quizQuestion1 = new QuizQuestion();
-        quizQuestion1.setId(savedQuestion1.getId());
-        quizQuestion1.setQuestion("<<redacted>>");
-        QuizQuestion quizQuestion2 = new QuizQuestion();
-        quizQuestion2.setId(savedQuestion2.getId());
-        quizQuestion2.setQuestion("<<redacted>>");
+        QuizQuestion quizQuestion1 = QuizQuestion.newBuilder()
+                .id(savedQuestion1.getId())
+                .question("<<redacted>>")
+                .build();
+        QuizQuestion quizQuestion2 = QuizQuestion.newBuilder()
+                .id(savedQuestion2.getId())
+                .question("<<redacted>>")
+                .build();
 
         List<QuizQuestion> questionsToUpdate = Lists.newArrayList(quizQuestion1, quizQuestion2);
 

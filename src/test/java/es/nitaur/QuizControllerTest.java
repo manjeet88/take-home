@@ -8,7 +8,6 @@ import org.apache.http.HttpStatus;
 import org.junit.Test;
 import org.springframework.http.ResponseEntity;
 
-import java.util.Iterator;
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.equalTo;
@@ -20,6 +19,7 @@ public class QuizControllerTest extends AbstractQuizApiTest {
 
     @Test
     public void getQuizzes_returnNoQuizzesIfNoQuizzes() throws Exception {
+        cleanUp();
         ResponseEntity<List<Quiz>> exchange = httpGetList(QUIZZES_API, QUESTIONS_TYPE);
 
         List<Quiz> quizzes = exchange.getBody();
@@ -30,8 +30,9 @@ public class QuizControllerTest extends AbstractQuizApiTest {
 
     @Test
     public void getQuizzes_returnAllQuizzes() throws Exception {
-        saveQuize1();
-        saveQuize2();
+        cleanUp();
+        saveQuiz();
+        saveQuiz();
 
         ResponseEntity<List<Quiz>> exchange = httpGetList(QUIZZES_API, QUIZZES_TYPE);
         List<Quiz> quizzes = exchange.getBody();
@@ -42,7 +43,7 @@ public class QuizControllerTest extends AbstractQuizApiTest {
 
     @Test
     public void getQuiz_returnQuizById() throws Exception {
-        Quiz savedQuiz = saveQuize1();
+        Quiz savedQuiz = saveQuiz();
 
         ResponseEntity<Quiz> response = httpGetOne(QUIZZES_API + "/" + savedQuiz.getId(), Quiz.class);
         Quiz quiz = response.getBody();
@@ -53,7 +54,7 @@ public class QuizControllerTest extends AbstractQuizApiTest {
 
     @Test
     public void getQuiz_quizNotFound() throws Exception {
-        ResponseEntity<Quiz> response = httpGetOne(QUIZZES_API + "/" + 1, Quiz.class);
+        ResponseEntity<Quiz> response = httpGetOne(QUIZZES_API + "/" + -1, Quiz.class);
         Quiz quiz = response.getBody();
 
         assertThat("Quiz not found, return status 404", response.getStatusCode().value(), equalTo(HttpStatus.SC_NOT_FOUND));
@@ -62,7 +63,7 @@ public class QuizControllerTest extends AbstractQuizApiTest {
 
     @Test
     public void createQuiz() throws Exception {
-        Quiz quizToCreate = buildQuize();
+        Quiz quizToCreate = buildQuiz();
 
         ResponseEntity<Quiz> response = httpPostOne(QUIZZES_API, quizToCreate, Quiz.class);
         Quiz quiz = response.getBody();
@@ -73,7 +74,7 @@ public class QuizControllerTest extends AbstractQuizApiTest {
 
     @Test
     public void deleteQuiz() throws Exception {
-        Quiz savedQuiz = saveQuize1();
+        Quiz savedQuiz = saveQuiz();
 
         ResponseEntity<Quiz> response = httpDelete(QUIZZES_API + "/" + savedQuiz.getId(), Quiz.class);
         Quiz quiz = response.getBody();
@@ -84,11 +85,11 @@ public class QuizControllerTest extends AbstractQuizApiTest {
 
     @Test
     public void updateQuestion() throws Exception {
-        Quiz savedQuiz = saveQuize1();
-        QuizQuestion savedQuestion = savedQuiz.getSections().iterator().next().getQuizQuestions().iterator().next();
+        QuizQuestion savedQuestion = saveQuizWithQuestion("OK?");
 
-        QuizQuestion questionToUpdate = new QuizQuestion();
-        questionToUpdate.setQuestion("What's up?");
+        QuizQuestion questionToUpdate = QuizQuestion.newBuilder()
+                .question("What's up?")
+                .build();
 
         httpPutOne(QUESTIONS_API + "/" + savedQuestion.getId(), questionToUpdate);
 
@@ -100,23 +101,25 @@ public class QuizControllerTest extends AbstractQuizApiTest {
 
     @Test
     public void updateQuestions() throws Exception {
-        Quiz savedQuiz = saveQuize1();
-        QuizSection savedSection = savedQuiz.getSections().iterator().next();
-        Iterator<QuizQuestion> iterator = savedSection.getQuizQuestions().iterator();
-        QuizQuestion savedQuestion1 = iterator.next();
-        QuizQuestion savedQuestion2 = iterator.next();
+        QuizSection savedSection = saveQuizWithSection("Question 1?", "Question 2?");
+        List<QuizQuestion> savedQuestions = savedSection.getQuizQuestions();
+        QuizQuestion savedQuestion1 = savedQuestions.get(0);
+        QuizQuestion savedQuestion2 = savedQuestions.get(1);
+        Long sectionId = savedSection.getId();
 
-        QuizQuestion questionToUpdate1 = new QuizQuestion();
-        questionToUpdate1.setId(savedQuestion1.getId());
-        questionToUpdate1.setQuestion("What's up?");
-        QuizQuestion questionToUpdate2 = new QuizQuestion();
-        questionToUpdate2.setId(savedQuestion2.getId());
-        questionToUpdate2.setQuestion("What's up?");
+        QuizQuestion questionToUpdate1 = QuizQuestion.newBuilder()
+                .id(savedQuestion1.getId())
+                .question("What's up?")
+                .build();
+        QuizQuestion questionToUpdate2 = QuizQuestion.newBuilder()
+                .id(savedQuestion2.getId())
+                .question("What's up?")
+                .build();
         List<QuizQuestion> questionsToUpdate = Lists.newArrayList(questionToUpdate1, questionToUpdate2);
 
         httpPutList(QUESTIONS_API, questionsToUpdate);
 
-        ResponseEntity<List<QuizQuestion>> response = httpGetList(QUESTIONS_API + "?filterSectionId=" + savedSection.getId(), QUESTIONS_TYPE);
+        ResponseEntity<List<QuizQuestion>> response = httpGetList(QUESTIONS_API + "?filterSectionId=" + sectionId, QUESTIONS_TYPE);
         List<QuizQuestion> questions = response.getBody();
 
         for (QuizQuestion question : questions) {

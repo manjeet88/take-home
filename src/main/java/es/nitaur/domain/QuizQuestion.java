@@ -36,6 +36,21 @@ public class QuizQuestion extends GenericEntity {
     @JoinColumn(name = "section_fk")
     private QuizSection section;
 
+    public QuizQuestion() {
+    }
+
+    private QuizQuestion(Builder builder) {
+        setId(builder.id);
+        setQuestion(builder.question);
+        setUpdateCount(builder.updateCount);
+        setAnswers(builder.answers);
+        setSection(builder.section);
+    }
+
+    public static Builder newBuilder() {
+        return new Builder();
+    }
+
     public String getQuestion() {
         return question;
     }
@@ -67,5 +82,45 @@ public class QuizQuestion extends GenericEntity {
 
     public void setUpdateCount(Long updateCount) {
         this.updateCount = updateCount;
+    }
+
+    public static final class Builder {
+        private Long id;
+        private String question;
+        private Long updateCount;
+        private List<QuizAnswer> answers;
+        private QuizSection section;
+
+        private Builder() {
+        }
+
+        public Builder id(Long id) {
+            this.id = id;
+            return this;
+        }
+
+        public Builder question(String question) {
+            this.question = question;
+            return this;
+        }
+
+        public Builder updateCount(Long updateCount) {
+            this.updateCount = updateCount;
+            return this;
+        }
+
+        public Builder answers(List<QuizAnswer> answers) {
+            this.answers = answers;
+            return this;
+        }
+
+        public Builder section(QuizSection section) {
+            this.section = section;
+            return this;
+        }
+
+        public QuizQuestion build() {
+            return new QuizQuestion(this);
+        }
     }
 }

@@ -14,19 +14,31 @@ import javax.persistence.Table;
 import java.util.List;
 
 @Entity
-@Table(name="QUIZ_SECTION")
+@Table(name = "QUIZ_SECTION")
 public class QuizSection extends GenericEntity {
 
     private static final long serialVersionUID = 1L;
 
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    @JoinColumn(name="section_fk")
+    @JoinColumn(name = "section_fk")
     @Fetch(FetchMode.SUBSELECT)
     private List<QuizQuestion> quizQuestions;
 
     @ManyToOne
-    @JoinColumn(name="quiz_fk")
+    @JoinColumn(name = "quiz_fk")
     private Quiz quiz;
+
+    public QuizSection() {
+    }
+
+    private QuizSection(Builder builder) {
+        setQuizQuestions(builder.quizQuestions);
+        setQuiz(builder.quiz);
+    }
+
+    public static Builder newBuilder() {
+        return new Builder();
+    }
 
     public List<QuizQuestion> getQuizQuestions() {
         return quizQuestions;
@@ -43,5 +55,27 @@ public class QuizSection extends GenericEntity {
 
     public void setQuiz(Quiz quiz) {
         this.quiz = quiz;
+    }
+
+    public static final class Builder {
+        private List<QuizQuestion> quizQuestions;
+        private Quiz quiz;
+
+        private Builder() {
+        }
+
+        public Builder quizQuestions(List<QuizQuestion> quizQuestions) {
+            this.quizQuestions = quizQuestions;
+            return this;
+        }
+
+        public Builder quiz(Quiz quiz) {
+            this.quiz = quiz;
+            return this;
+        }
+
+        public QuizSection build() {
+            return new QuizSection(this);
+        }
     }
 }
