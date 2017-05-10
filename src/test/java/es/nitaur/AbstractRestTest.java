@@ -22,8 +22,18 @@ public abstract class AbstractRestTest {
         return restTemplate.exchange(url, HttpMethod.GET, null, responseType);
     }
 
+    protected <T> List<T> getList(String url, ParameterizedTypeReference responseType) {
+        ResponseEntity<List<T>> exchange = restTemplate.exchange(url, HttpMethod.GET, null, responseType);
+        return exchange.getBody();
+    }
+
     protected ResponseEntity httpGetOne(String url, Class responseType) {
         return restTemplate.getForEntity(url, responseType);
+    }
+
+    protected <T> T getOne(String url, Class<T> responseType) {
+        ResponseEntity<T> forEntity = restTemplate.getForEntity(url, responseType);
+        return forEntity.getBody();
     }
 
     protected <T> ResponseEntity<T> httpPostOne(String url, T requestObject, Class responseType) {

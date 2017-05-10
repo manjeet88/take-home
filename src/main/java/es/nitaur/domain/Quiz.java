@@ -11,7 +11,6 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Entity
 @Table(name = "QUIZ")
@@ -55,6 +54,10 @@ public class Quiz extends GenericEntity {
         this.sections = sections;
     }
 
+    public QuizSection getFirstSection() {
+        return sections == null || sections.isEmpty() ? null : sections.iterator().next();
+    }
+
     public static final class Builder {
         private String name;
         private List<QuizSection> sections;
@@ -68,23 +71,6 @@ public class Quiz extends GenericEntity {
         }
 
         public Builder sections(List<QuizSection> sections) {
-            this.sections = sections;
-            return this;
-        }
-
-        public Builder questions(List<List<QuizQuestion>> allQuestions) {
-            if (allQuestions == null) {
-                this.sections = null;
-                return this;
-            }
-
-            List<QuizSection> sections = allQuestions.stream()
-                    .map(questions -> QuizSection.newBuilder()
-                                    .quizQuestions(questions)
-                                    .build()
-                    )
-                    .collect(Collectors.toList());
-
             this.sections = sections;
             return this;
         }

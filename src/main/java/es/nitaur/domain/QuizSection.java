@@ -57,6 +57,14 @@ public class QuizSection extends GenericEntity {
         this.quiz = quiz;
     }
 
+    public Long getFirstQuestionId() {
+        return quizQuestions == null || quizQuestions.isEmpty() ? null : quizQuestions.iterator().next().getId();
+    }
+
+    public Long getLastQuestionId() {
+        return quizQuestions == null || quizQuestions.isEmpty() ? null : quizQuestions.get(quizQuestions.size() - 1).getId();
+    }
+
     public static final class Builder {
         private List<QuizQuestion> quizQuestions;
         private Quiz quiz;

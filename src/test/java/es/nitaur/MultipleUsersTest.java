@@ -1,9 +1,10 @@
 package es.nitaur;
 
+import es.nitaur.domain.Quiz;
 import es.nitaur.domain.QuizQuestion;
+import es.nitaur.domain.QuizSection;
 import org.junit.Test;
 import org.springframework.boot.context.embedded.LocalServerPort;
-import org.springframework.http.ResponseEntity;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -19,8 +20,9 @@ public class MultipleUsersTest extends AbstractQuizApiTest {
 
     @Test
     public void answerQuestions() throws Exception {
-        QuizQuestion savedQuestion = saveQuizWithQuestion("Check answers?");
-        Long questionId = savedQuestion.getId();
+        Quiz quiz = saveQuiz();
+        QuizSection firstSection = quiz.getFirstSection();
+        Long questionId = firstSection.getFirstQuestionId();
 
         ExecutorService executorService = Executors.newFixedThreadPool(5);
 
@@ -33,8 +35,7 @@ public class MultipleUsersTest extends AbstractQuizApiTest {
         executorService.shutdown();
         executorService.awaitTermination(60, TimeUnit.SECONDS);
 
-        ResponseEntity<QuizQuestion> response = httpGetOne(QUESTIONS_API + "/" + questionId, QuizQuestion.class);
-        QuizQuestion question = response.getBody();
+        QuizQuestion question = getOne(QUESTIONS_API + "/" + questionId, QuizQuestion.class);
 
         assertThat("There were 10 updates to the question", question.getUpdateCount(), is(10L));
     }

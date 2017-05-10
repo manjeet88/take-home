@@ -85,45 +85,42 @@ public class QuizControllerTest extends AbstractQuizApiTest {
 
     @Test
     public void updateQuestion() throws Exception {
-        QuizQuestion savedQuestion = saveQuizWithQuestion("OK?");
+        Long questionId = saveQuizWithQuestion("OK?");
 
+        String newText = "What's up?";
         QuizQuestion questionToUpdate = QuizQuestion.newBuilder()
-                .question("What's up?")
+                .question(newText)
                 .build();
 
-        httpPutOne(QUESTIONS_API + "/" + savedQuestion.getId(), questionToUpdate);
+        httpPutOne(QUESTIONS_API + "/" + questionId, questionToUpdate);
 
-        ResponseEntity<QuizQuestion> response = httpGetOne(QUESTIONS_API + "/" + savedQuestion.getId(), QuizQuestion.class);
-        QuizQuestion question = response.getBody();
+        QuizQuestion question = getOne(QUESTIONS_API + "/" + questionId, QuizQuestion.class);
 
-        assertThat("Updated question text is \"What's up?\"", question.getQuestion(), equalTo("What's up?"));
+        assertThat("Updated question text is " + newText, question.getQuestion(), equalTo(newText));
     }
 
     @Test
     public void updateQuestions() throws Exception {
-        QuizSection savedSection = saveQuizWithSection("Question 1?", "Question 2?");
-        List<QuizQuestion> savedQuestions = savedSection.getQuizQuestions();
-        QuizQuestion savedQuestion1 = savedQuestions.get(0);
-        QuizQuestion savedQuestion2 = savedQuestions.get(1);
-        Long sectionId = savedSection.getId();
+        QuizSection section = saveQuizWithSection("Question 1?", "Question 2?");
 
+        String newText = "What's up?";
         QuizQuestion questionToUpdate1 = QuizQuestion.newBuilder()
-                .id(savedQuestion1.getId())
-                .question("What's up?")
+                .id(section.getFirstQuestionId())
+                .question(newText)
                 .build();
         QuizQuestion questionToUpdate2 = QuizQuestion.newBuilder()
-                .id(savedQuestion2.getId())
-                .question("What's up?")
+                .id(section.getLastQuestionId())
+                .question(newText)
                 .build();
         List<QuizQuestion> questionsToUpdate = Lists.newArrayList(questionToUpdate1, questionToUpdate2);
 
         httpPutList(QUESTIONS_API, questionsToUpdate);
 
-        ResponseEntity<List<QuizQuestion>> response = httpGetList(QUESTIONS_API + "?filterSectionId=" + sectionId, QUESTIONS_TYPE);
+        ResponseEntity<List<QuizQuestion>> response = httpGetList(QUESTIONS_API + "?filterSectionId=" + section.getId(), QUESTIONS_TYPE);
         List<QuizQuestion> questions = response.getBody();
 
         for (QuizQuestion question : questions) {
-            assertThat("Updated question text is \"What's up?\"", question.getQuestion(), equalTo("What's up?"));
+            assertThat("Updated question text is " + newText, question.getQuestion(), equalTo(newText));
         }
         assertThat("Return 2 questions", questions, hasSize(2));
     }

@@ -35,16 +35,15 @@ public abstract class AbstractQuizApiTest extends AbstractRestTest {
         return savedQuiz;
     }
 
-    protected QuizQuestion saveQuizWithQuestion(String questionText) {
+    protected Long saveQuizWithQuestion(String questionText) {
         QuizSection section = saveQuizWithSection(questionText);
-        List<QuizQuestion> questions = section.getQuizQuestions();
-        return questions.get(0);
+        return section.getFirstQuestionId();
     }
 
     protected QuizSection saveQuizWithSection(String... questionTexts) {
         Quiz quiz = buildQuiz("Any", Arrays.asList(Arrays.asList(questionTexts)));
         Quiz savedQuiz = quizRepository.save(quiz);
-        return savedQuiz.getSections().get(0);
+        return savedQuiz.getFirstSection();
     }
 
     protected Quiz buildQuiz() {
@@ -54,20 +53,23 @@ public abstract class AbstractQuizApiTest extends AbstractRestTest {
     private Quiz buildQuiz(String quizName, List<List<String>> allQuestions) {
         String uid = getUid();
 
-        List<List<QuizQuestion>> allQuizQuestions = buildQuizQuestions(uid, allQuestions);
+        List<QuizSection> sections = buildSections(uid, allQuestions);
 
         Quiz quiz = Quiz.newBuilder()
                 .name(quizName + uid)
-                .questions(allQuizQuestions)
+                .sections(sections)
                 .build();
         return quiz;
     }
 
-    private List<List<QuizQuestion>> buildQuizQuestions(String uid, List<List<String>> allQuestions) {
-        List<List<QuizQuestion>> allQuizQuestions = allQuestions.stream()
-                .map(questions -> buildQuestions(uid, questions))
+    private List<QuizSection> buildSections(String uid, List<List<String>> allQuestions) {
+        List<QuizSection> sections = allQuestions.stream()
+                .map(questions -> QuizSection.newBuilder()
+                                .quizQuestions(buildQuestions(uid, questions))
+                                .build()
+                )
                 .collect(Collectors.toList());
-        return allQuizQuestions;
+        return sections;
     }
 
     private List<QuizQuestion> buildQuestions(String uid, List<String> questions) {
