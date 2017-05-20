@@ -1,77 +1,67 @@
 package es.nitaur;
 
 import com.google.common.collect.Lists;
+import es.nitaur.domain.QuizQuestion;
+import es.nitaur.domain.QuizSection;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.context.embedded.LocalServerPort;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.web.client.TestRestTemplate;
-import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
-import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.core.IsNot.not;
 
-@RunWith(SpringRunner.class)
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class AllQuestionsValidTest {
-
-    public static final String UPDATE_QUESTION_API = "/api/quiz/updateQuestions";
-    public static final String GET_ALL_QUESTIONS_API = "/api/quiz/allQuestions";
-
-    @LocalServerPort
-    int port;
-
-    @Autowired
-    private TestRestTemplate restTemplate;
+public class AllQuestionsValidTest extends AbstractQuizApiTest {
+    private static final String TEXT_REDACTED = "<<redacted>>";
 
     @Test
     public void questionsAreNotSavedWithEmptyQuestionText() throws Exception {
-        QuizQuestion quizQuestion1 = new QuizQuestion();
-        quizQuestion1.setId(1L);
-        quizQuestion1.setQuestion("<<redacted>>");
+        QuizSection section = saveQuizWithSection("Value 1?", "Value 2?");
 
-        QuizQuestion quizQuestion2 = new QuizQuestion();
-        quizQuestion2.setId(2L);
-        quizQuestion2.setQuestion(null);
+        QuizQuestion quizQuestion1 = QuizQuestion.newBuilder()
+                .id(section.getFirstQuestionId())
+                .question(TEXT_REDACTED)
+                .build();
+        QuizQuestion quizQuestion2 = QuizQuestion.newBuilder()
+                .id(section.getLastQuestionId())
+                .question(null)
+                .build();
 
         List<QuizQuestion> questionsToUpdate = Lists.newArrayList(quizQuestion1, quizQuestion2);
 
-        restTemplate.postForLocation(UPDATE_QUESTION_API, questionsToUpdate);
+        httpPutList(QUESTIONS_API, questionsToUpdate);
 
-        ResponseEntity<List<QuizQuestion>> exchange = restTemplate.exchange(GET_ALL_QUESTIONS_API + "?filterSectionId=1", HttpMethod.GET, null, new ParameterizedTypeReference<List<QuizQuestion>>() {});
-        List<QuizQuestion> body = exchange.getBody();
+        List<QuizQuestion> questions = getList(QUESTIONS_API + "?filterSectionId=" + section.getId(), QUESTIONS_TYPE);
 
-        for (QuizQuestion quizQuestion : body) {
-            assertThat("Question text should not be <<redacted>>", "<<redacted>>", not(quizQuestion.getQuestion()));
+        for (QuizQuestion question : questions) {
+            assertThat("Question text should not be " + TEXT_REDACTED, question.getQuestion(), not(TEXT_REDACTED));
         }
+        assertThat("Return 2 questions", questions, hasSize(2));
     }
 
     @Test
     public void questionsAreSavedWithQuestionText() throws Exception {
-        QuizQuestion quizQuestion3 = new QuizQuestion();
-        quizQuestion3.setId(3L);
-        quizQuestion3.setQuestion("<<redacted>>");
+        QuizSection section = saveQuizWithSection("Value 3?", "Value 4?");
 
-        QuizQuestion quizQuestion4 = new QuizQuestion();
-        quizQuestion4.setId(4L);
-        quizQuestion4.setQuestion("<<redacted>>");
+        QuizQuestion quizQuestion1 = QuizQuestion.newBuilder()
+                .id(section.getFirstQuestionId())
+                .question(TEXT_REDACTED)
+                .build();
+        QuizQuestion quizQuestion2 = QuizQuestion.newBuilder()
+                .id(section.getLastQuestionId())
+                .question(TEXT_REDACTED)
+                .build();
 
-        List<QuizQuestion> questionsToUpdate = Lists.newArrayList(quizQuestion3, quizQuestion4);
+        List<QuizQuestion> questionsToUpdate = Lists.newArrayList(quizQuestion1, quizQuestion2);
 
-        restTemplate.postForLocation(UPDATE_QUESTION_API, questionsToUpdate);
+        httpPutList(QUESTIONS_API, questionsToUpdate);
 
-        ResponseEntity<List<QuizQuestion>> exchange = restTemplate.exchange(GET_ALL_QUESTIONS_API + "?filterSectionId=2", HttpMethod.GET, null, new ParameterizedTypeReference<List<QuizQuestion>>() {});
-        List<QuizQuestion> body = exchange.getBody();
+        List<QuizQuestion> questions = getList(QUESTIONS_API + "?filterSectionId=" + section.getId(), QUESTIONS_TYPE);
 
-        for (QuizQuestion quizQuestion : body) {
-            assertThat("Question text is only <<redacted>>", "<<redacted>>", is(quizQuestion.getQuestion()));
+        for (QuizQuestion quizQuestion : questions) {
+            assertThat("Question text is only " + TEXT_REDACTED, quizQuestion.getQuestion(), is(TEXT_REDACTED));
         }
+        assertThat("Return 2 questions", questions, hasSize(2));
     }
 }

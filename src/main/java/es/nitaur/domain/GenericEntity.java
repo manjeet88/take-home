@@ -1,4 +1,4 @@
-package es.nitaur;
+package es.nitaur.domain;
 
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -14,6 +14,9 @@ public class GenericEntity implements Serializable {
     @Id
     @GeneratedValue
     private Long id;
+
+    @Version
+    private Integer version;
 
     public Long getId() {
         return id;

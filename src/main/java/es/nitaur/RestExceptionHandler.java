@@ -1,7 +1,5 @@
 package es.nitaur;
 
-import javax.persistence.NoResultException;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -12,6 +10,8 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
+
+import javax.persistence.NoResultException;
 
 @ControllerAdvice
 public class RestExceptionHandler extends ResponseEntityExceptionHandler {
@@ -27,9 +27,10 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(EmptyResultDataAccessException.class)
     public ResponseEntity<Object> handleEmptyResultDataAccessException(final EmptyResultDataAccessException ex,
-            final WebRequest request) {
+                                                                       final WebRequest request) {
         final ExceptionDetails detail = new ExceptionBuilder().exception(ex).httpStatus(HttpStatus.NOT_FOUND)
                 .webRequest(request).build();
+        logException(detail);
         return handleExceptionInternal(ex, detail, new HttpHeaders(), HttpStatus.NOT_FOUND, request);
     }
 
@@ -37,7 +38,17 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
     public ResponseEntity<Object> handleGenericException(final Exception ex, final WebRequest request) {
         final ExceptionDetails detail = new ExceptionBuilder().exception(ex)
                 .httpStatus(HttpStatus.INTERNAL_SERVER_ERROR).webRequest(request).build();
+        logException(detail);
         return handleExceptionInternal(ex, detail, new HttpHeaders(), HttpStatus.INTERNAL_SERVER_ERROR, request);
+    }
+
+    private void logException(ExceptionDetails detail) {
+        logger.error("Exception {} occurred on [{} {}]: {}",
+                detail.getExceptionClass(),
+                detail.getMethod(),
+                detail.getPath(),
+                detail.getExceptionMessage()
+        );
     }
 
 }

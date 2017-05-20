@@ -1,10 +1,10 @@
 package es.nitaur.repository;
 
-import es.nitaur.domain.Quiz;
+import es.nitaur.domain.QuizSection;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface QuizRepository extends JpaRepository<Quiz, Long> {
+public interface QuizSectionRepository extends JpaRepository<QuizSection, Long> {
 
 }
